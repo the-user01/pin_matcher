@@ -1,5 +1,17 @@
 const pinInput = document.getElementById('pin');
 
+
+const btnContainer = document.getElementById('calcBtn');
+const typedPin = document.getElementById('typedPin');
+
+const correct = document.getElementById('correct');
+const incorrect = document.getElementById('incorrect');
+
+const trial = document.getElementById('trial');
+
+const submitBtn =  document.getElementById('submitBtn');
+
+
 function getPin(){
     const random = Math.random()*10000;
     const pin = (random+" ").split('.')[0];
@@ -15,22 +27,30 @@ function getPin(){
 
 }
 
+function displayInfo(msg1, msg2){
+
+    correct.style.display = msg1;
+    incorrect.style.display = msg2;
+    
+}
+
 // display generated pin
 
 function generatePin()
 {
     pinInput.value = getPin();
+
+    trial.innerText = '3';
+
+    typedPin.value = '';
+    
+    displayInfo('none', 'none');
+
+    submitBtn.disabled = false;
 }
 
 // handle calculator button event
 
-const btnContainer = document.getElementById('calcBtn');
-const typedPin = document.getElementById('typedPin');
-
-const correct = document.getElementById('correct');
-const incorrect = document.getElementById('incorrect');
-
-const trial = document.getElementById('trial');
 
 btnContainer.addEventListener('click', function(event){
     var digit = event.target.innerText;
@@ -40,19 +60,24 @@ btnContainer.addEventListener('click', function(event){
         if(digit==='<')
         {
             typedPin.value = typedPin.value.slice(0,-1);
+            displayInfo('none', 'none');
         }
 
         if(digit === 'C')
         {
             typedPin.value ='';
-            correct.style.display = 'none';
-            incorrect.style.display = 'none';
+            displayInfo('none', 'none');
         }
     }
     else
     {
-        typedPin.value = typedPin.value + digit; 
+        if(typedPin.value.length < 4)
+        {
+            typedPin.value = typedPin.value + digit; 
+            displayInfo('none', 'none');
+        }
     }
+
     
 })
 
@@ -65,16 +90,30 @@ function checkPin()
     
     if(pin === typed)
     {
-        incorrect.style.display = 'none';
-        correct.style.display = 'block';
+        displayInfo('block', 'none');
     }
     else
     {
         const trialInt = parseInt(trial.innerText);
-        trialValue = trialInt - 1;
-        trial.innerText = trialValue;
 
-        incorrect.style.display = 'block';
-        correct.style.display = 'none';
+        if(trialInt <= 1){
+            trial.innerText = '0';
+           submitBtn.disabled = true;
+
+           pinInput.value = '';
+           typedPin.value = '';
+
+          displayInfo('none', 'none');
+        }
+        else
+        {
+            trialValue = trialInt - 1;
+            trial.innerText = trialValue;
+
+            displayInfo('none', 'block');
+        }
+
+        
+        
     }
 }
